@@ -7,17 +7,22 @@ import numpy as np
 app = Flask(__name__)
 model = joblib.load('heart_disease_model.pkl')
 
+
 @app.route('/predict', methods=['POST'])
 def predict():
     # JSON verisini al
     data = request.get_json()
-    
+
+    # 'features' anahtarını kontrol et
+    if 'features' not in data:
+        return jsonify({'error': 'features is missing from the request'}), 400
+
     # Özellikleri numpy dizisine çevir
     features = np.array(data['features']).reshape(1, -1)
-    
+
     # Tahmin yap
     prediction = model.predict(features)
-    
+
     # Sonucu JSON olarak döndür
     return jsonify({'prediction': int(prediction[0])})
 
